@@ -1,17 +1,21 @@
-name: Real Solution Android Build
+name: Build TotkaQuiz APK
 
 on:
   push:
     branches: [ "main" ]
   workflow_dispatch:
 
+env:
+  # Node.js 24 ব্যবহার করতে বাধ্য করা (ওয়ার্নিং সরানোর জন্য)
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   build:
-    name: Build and Upload
+    name: Build & Release Artifacts
     runs-on: ubuntu-latest
 
     steps:
-      - name: 📥 Checkout Code
+      - name: 📥 Checkout Repository
         uses: actions/checkout@v4
 
       - name: ☕ Setup JDK 17
@@ -21,17 +25,31 @@ jobs:
           java-version: '17'
           cache: 'gradle'
 
-      - name: 📌 Grant execute permission
-        run: chmod +x gradlew
+      - name: 📌 Fix Permissions & Scripts
+        # টার্মাক্স বা উইন্ডোজ থেকে আসা ইনভিজিবল এরর দূর করতে dos2unix ব্যবহার
+        run: |
+          chmod +x gradlew
+          sudo apt-get install dos2unix -y
+          dos2unix gradlew
 
-      - name: 🔨 Clean & Build APK
-        # clean যোগ করা হয়েছে যাতে পুরনো কোনো এরর ক্যাশ না থাকে
-        run: ./gradlew clean assembleDebug --info
+      - name: 🔨 Build Debug APK
+        # আমরা সরাসরি মডিউল ধরে বিল্ড করছি যাতে কোনো মিস না হয়
+        run: ./gradlew :app:assembleDebug --stacktrace --no-daemon
 
-      - name: 📤 Upload Entire Outputs Folder (The Master Trick)
+      - name: 🔎 Verification & Preparation
+        # ফাইলটি খুঁজে বের করে একটি নির্দিষ্ট ফোল্ডারে রাখা যাতে আপলোড করতে সুবিধা হয়
+        run: |
+          mkdir -p final_output
+          # সব .apk ফাইল খুঁজে বের করে কপি করা
+          find app/build/outputs/apk/debug/ -name "*.apk" -exec cp {} final_output/ \;
+          echo "Build successful. Files found:"
+          ls -R final_output/
+
+      - name: 📤 Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: TotkaQuiz-Outputs
-          # আমরা কোনো নির্দিষ্ট .apk খুঁজছি না, পুরো আউটপুট ফোল্ডার আপলোড করে দিচ্ছি
-          path: app/build/outputs/
+          name: TotkaQuiz-Debug-Build
+          path: final_output/*.apk
+          retention-days: 7
+          if-no-files-found: error
           
