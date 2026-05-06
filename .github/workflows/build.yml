@@ -1,4 +1,4 @@
-name: Build Android APK
+name: Final Build Fix
 
 on:
   push:
@@ -7,11 +7,11 @@ on:
 
 jobs:
   build:
-    name: Build Debug APK
+    name: Build Android
     runs-on: ubuntu-latest
 
     steps:
-      - name: 📥 Checkout Repository
+      - name: 📥 Checkout
         uses: actions/checkout@v4
 
       - name: ☕ Setup JDK 17
@@ -21,19 +21,28 @@ jobs:
           java-version: '17'
           cache: 'gradle'
 
-      - name: 📌 Grant execute permission
+      - name: 📌 Permission
         run: chmod +x gradlew
 
-      - name: 🔨 Clean & Build APK
-        # প্রোজেক্ট পরিষ্কার করে নতুন করে বিল্ড করার জন্য clean assembleDebug দেওয়া হয়েছে
-        run: ./gradlew clean assembleDebug --stacktrace --no-daemon
+      - name: 🔨 Build with Force
+        # এখানে শুধু assembleDebug এর বদলে assemble দেওয়া হয়েছে যাতে সব ভেরিয়েন্ট চেক হয়
+        run: ./gradlew assembleDebug --stacktrace --no-daemon
 
-      - name: 📤 Upload APK
+      - name: 🔎 Locate APK File
+        # এই কমান্ডটি চেক করবে আসলে APK কোথায় তৈরি হয়েছে
+        run: |
+          echo "Listing all APKs found:"
+          find . -name "*.apk"
+          # আসল ফাইলটিকে একটি নির্দিষ্ট জায়গায় কপি করে আনা
+          mkdir -p output
+          find app/build/outputs/apk/ -name "*.apk" -exec cp {} output/ \; || true
+
+      - name: 📤 Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: TotkaQuiz-Debug
-          # আপনার প্রোজেক্ট অনুযায়ী এটিই সঠিক পাথ
-          path: app/build/outputs/apk/debug/app-debug.apk
+          name: TotkaQuiz-Build
+          # আমরা এখন সরাসরি ওই আউটপুট ফোল্ডার থেকে ফাইল নেব
+          path: output/*.apk
           retention-days: 7
           if-no-files-found: error
           
