@@ -1,4 +1,4 @@
-name: Brute Force Build
+name: Ultimate Android Build
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    name: Force Finding Path
+    name: Auto-Detect & Build
     runs-on: ubuntu-latest
 
     steps:
@@ -20,37 +20,34 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: 🔍 Brute Force Directory Search
-        # এই স্টেপটি সার্ভারের সব ফাইল এবং ফোল্ডার প্রিন্ট করবে
-        # যাতে আমরা দেখতে পাই 'app' ফোল্ডারটি আসলে কোথায়
+      - name: 🛠️ Auto-Fix and Build
+        # এখানে আমরা ম্যানুয়ালি পাথ না লিখে অটো-ডিটেক্ট মোড ব্যবহার করছি
         run: |
-          echo "Current Path: $(pwd)"
-          echo "--- Root Files ---"
-          ls -F
-          echo "--- Full Tree Search ---"
-          find . -maxdepth 3 -not -path '*/.*'
-
-      - name: 📌 Fix Permissions & Line Endings
-        # gradlew ফাইলটি যেখানেই থাকুক, খুঁজে বের করে পারমিশন দেবে
-        run: |
-          find . -name "gradlew" -exec chmod +x {} \;
-          find . -name "gradlew" -exec sudo apt-get install dos2unix -y && dos2unix {} \;
-
-      - name: 🔨 Force Build (Ignore Errors for now)
-        # এটি যে কোনো ডিরেক্টরিতে gradlew থাকলে সেটা রান করার চেষ্টা করবে
-        run: |
-          GRADLEW_PATH=$(find . -name "gradlew" | head -n 1)
-          if [ -z "$GRADLEW_PATH" ]; then
-            echo "❌ gradlew খুঁজে পাওয়া যায়নি!"
+          echo "Looking for gradlew..."
+          # যেখানেই gradlew থাকুক খুঁজে বের করবে
+          GRADLEW_FILE=$(find . -name "gradlew" | head -n 1)
+          
+          if [ -z "$GRADLEW_FILE" ]; then
+            echo "❌ Error: gradlew file not found in the repository!"
             exit 1
           fi
-          $GRADLEW_PATH assembleDebug --no-daemon --stacktrace
+          
+          echo "✅ Found gradlew at: $GRADLEW_FILE"
+          
+          # ফাইল পারমিশন এবং ফরম্যাট ফিক্স
+          chmod +x "$GRADLEW_FILE"
+          sudo apt-get install -y dos2unix
+          dos2unix "$GRADLEW_FILE"
+          
+          # বিল্ড শুরু
+          echo "🚀 Starting Build..."
+          "$GRADLEW_FILE" assembleDebug --no-daemon --stacktrace
 
-      - name: 📤 Brute Force APK Upload
+      - name: 📤 Upload All Generated APKs
         uses: actions/upload-artifact@v4
         with:
-          name: TotkaQuiz-BruteForce
-          # এই পাথটি পুরো প্রোজেক্টের সব APK খুঁজে বের করবে
+          name: TotkaQuiz-Build
+          # এটি যে কোনো ফোল্ডার থেকে .apk ফাইল তুলে আনবে
           path: "**/build/outputs/apk/debug/*.apk"
           if-no-files-found: error
           
