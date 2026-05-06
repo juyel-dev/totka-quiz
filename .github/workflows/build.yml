@@ -1,4 +1,4 @@
-name: Ultimate Android Build
+name: Final Pathless Build
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    name: Auto-Detect & Build
+    name: Auto-Build
     runs-on: ubuntu-latest
 
     steps:
@@ -19,35 +19,31 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17'
+          cache: 'gradle'
 
-      - name: 🛠️ Auto-Fix and Build
-        # এখানে আমরা ম্যানুয়ালি পাথ না লিখে অটো-ডিটেক্ট মোড ব্যবহার করছি
+      - name: 🛠️ Fix and Build
         run: |
-          echo "Looking for gradlew..."
-          # যেখানেই gradlew থাকুক খুঁজে বের করবে
-          GRADLEW_FILE=$(find . -name "gradlew" | head -n 1)
-          
-          if [ -z "$GRADLEW_FILE" ]; then
-            echo "❌ Error: gradlew file not found in the repository!"
-            exit 1
-          fi
-          
-          echo "✅ Found gradlew at: $GRADLEW_FILE"
-          
-          # ফাইল পারমিশন এবং ফরম্যাট ফিক্স
-          chmod +x "$GRADLEW_FILE"
+          # ১. gradlew ফাইলটি যেখানেই থাকুক খুঁজে বের করা
+          G_PATH=$(find . -name "gradlew" | head -n 1)
+          chmod +x "$G_PATH"
           sudo apt-get install -y dos2unix
-          dos2unix "$GRADLEW_FILE"
+          dos2unix "$G_PATH"
           
-          # বিল্ড শুরু
-          echo "🚀 Starting Build..."
-          "$GRADLEW_FILE" assembleDebug --no-daemon --stacktrace
+          # ২. অ্যাপ মডিউলসহ বিল্ড করা (যাতে কোনো পাথ মিস না হয়)
+          "$G_PATH" :app:assembleDebug --no-daemon
 
-      - name: 📤 Upload All Generated APKs
+      - name: 🔎 Deep Search and Copy
+        # এটি ম্যাজিক স্টেপ: যেখানেই APK থাকুক, সেটিকে বের করে আনবে
+        run: |
+          mkdir -p final_output
+          find . -name "*.apk" -type f -exec cp {} final_output/ \;
+          echo "চেক করছি কোন ফাইল পাওয়া গেল কি না:"
+          ls final_output/
+
+      - name: 📤 Upload Found APKs
         uses: actions/upload-artifact@v4
         with:
           name: TotkaQuiz-Build
-          # এটি যে কোনো ফোল্ডার থেকে .apk ফাইল তুলে আনবে
-          path: "**/build/outputs/apk/debug/*.apk"
-          if-no-files-found: error
+          # আমরা এখন আমাদের বানানো 'final_output' ফোল্ডার থেকে আপলোড করব
+          path: final_output/
           
