@@ -1,4 +1,4 @@
-name: Final Build Fix
+name: Build Android APK
 
 on:
   push:
@@ -7,11 +7,11 @@ on:
 
 jobs:
   build:
-    name: Build Android
+    name: Build & Artifact
     runs-on: ubuntu-latest
 
     steps:
-      - name: 📥 Checkout
+      - name: 📥 Checkout Repository
         uses: actions/checkout@v4
 
       - name: ☕ Setup JDK 17
@@ -21,28 +21,30 @@ jobs:
           java-version: '17'
           cache: 'gradle'
 
-      - name: 📌 Permission
+      - name: 📌 Grant execute permission
         run: chmod +x gradlew
 
-      - name: 🔨 Build with Force
-        # এখানে শুধু assembleDebug এর বদলে assemble দেওয়া হয়েছে যাতে সব ভেরিয়েন্ট চেক হয়
+      - name: 🔨 Build Debug APK
         run: ./gradlew assembleDebug --stacktrace --no-daemon
 
-      - name: 🔎 Locate APK File
-        # এই কমান্ডটি চেক করবে আসলে APK কোথায় তৈরি হয়েছে
+      - name: 🔎 Locate & Prepare APK
         run: |
-          echo "Listing all APKs found:"
-          find . -name "*.apk"
-          # আসল ফাইলটিকে একটি নির্দিষ্ট জায়গায় কপি করে আনা
+          echo "Finding all APKs..."
+          find . -name "*.apk" -type f
           mkdir -p output
-          find app/build/outputs/apk/ -name "*.apk" -exec cp {} output/ \; || true
+          # কোপাইলটের কনফার্ম করা পাথে ফাইলটি কপি করা হচ্ছে
+          if [ -f app/build/outputs/apk/debug/app-debug.apk ]; then
+            cp app/build/outputs/apk/debug/app-debug.apk output/totka-quiz-debug.apk
+            echo "✅ APK found and copied!"
+          else
+            echo "❌ ERROR: APK not found at expected location!"
+            exit 1
+          fi
 
-      - name: 📤 Upload Artifact
+      - name: 📤 Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: TotkaQuiz-Build
-          # আমরা এখন সরাসরি ওই আউটপুট ফোল্ডার থেকে ফাইল নেব
+          name: TotkaQuiz-App
           path: output/*.apk
           retention-days: 7
           if-no-files-found: error
-          
