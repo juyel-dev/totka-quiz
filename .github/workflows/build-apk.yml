@@ -1,0 +1,60 @@
+name: Build Totka Quiz APK
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Make Gradle Executable
+        run: chmod +x ./gradlew
+
+      - name: Build Debug APK
+        run: ./gradlew assembleDebug --stacktrace
+
+      # APK খুঁজে বের করা + কপি
+      - name: 🔍 Find and Copy APK
+        run: |
+          echo "=== Finding APK files ==="
+          find . -name "*.apk" -type f
+          
+          mkdir -p apk-output
+          cp app/build/outputs/apk/debug/*.apk apk-output/ 2>/dev/null || echo "No APK found in standard path"
+          
+          echo "=== Files in output folder ==="
+          ls -la apk-output/
+
+      - name: 📦 Upload APK (Artifact)
+        uses: actions/upload-artifact@v4
+        with:
+          name: totka-quiz-debug-apk
+          path: apk-output/*.apk
+          retention-days: 30
+          if-no-files-found: warn
+
+      - name: 📤 Upload to Release (Tag দিলে)
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: apk-output/*.apk
+          tag_name: latest
+          name: Totka Quiz Latest Build
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
