@@ -1,68 +1,26 @@
-# ১. Workflow Name (ডকুমেন্টেশন অনুযায়ী)
-name: Totka Quiz Production Build
-
-# ২. Trigger Events (ডকুমেন্টেশন অনুযায়ী push এবং manual trigger রাখা হয়েছে)
-on:
-  push:
-    branches:
-      - main
-  workflow_dispatch: # এটি আপনাকে ম্যানুয়ালি বিল্ড রান করার সুযোগ দেবে
-
-# ৩. Permissions (ডকুমেন্টেশন অনুযায়ী GITHUB_TOKEN কে রাইট অ্যাক্সেস দেওয়া হয়েছে)
-permissions:
-  contents: write
-
-jobs:
-  android-build:
-    name: Generate and Locate APK
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: 📥 Checkout Repository
-        uses: actions/checkout@v4
-
-      - name: ☕ Setup JDK 17
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '17'
-          cache: 'gradle'
-
-      - name: 📌 Fix Permissions & Format
-        # 'find' এরর এড়াতে সরাসরি ভ্যারিয়েবল ব্যবহার করা হয়েছে
+      - name: 🛠️ Diagnostic Build
         run: |
           G_PATH=$(find . -name "gradlew" | head -n 1)
-          if [ -z "$G_PATH" ]; then echo "Gradlew not found!"; exit 1; fi
           chmod +x "$G_PATH"
-          sudo apt-get install -y dos2unix
-          dos2unix "$G_PATH"
-          echo "GRADLE_PATH=$G_PATH" >> $GITHUB_ENV
-
-      - name: 🔨 Build Debug APK
-        # ডাইরেক্ট পাথ ব্যবহার না করে এনভায়রনমেন্ট ভ্যারিয়েবল থেকে রান করা হচ্ছে
-        run: |
-          ${{ env.GRADLE_PATH }} :app:assembleDebug --no-daemon --stacktrace
-
-      - name: 🔎 The "Deep Scan" Strategy
-        # ডকুমেন্টেশনের 'paths' এর ঝামেলা এড়াতে আমরা সব APK এক জায়গায় জড়ো করব
+          
+          echo "--- ১. প্রজেক্টের আসল চেহারা (Directory Structure) ---"
+          ls -R
+          
+          echo "--- ২. গ্র্যাডল কী কী করতে পারে (Available Tasks) ---"
+          # এটি দেখাবে assembleDebug আদৌ আছে কি না
+          "$G_PATH" tasks --all | grep assemble || echo "❌ No assemble task found!"
+          
+          echo "--- ৩. মেইন বিল্ড শুরু ---"
+          # আমরা এবার কোনো মডিউল ( :app: ) উল্লেখ না করে সরাসরি রান করব
+          "$G_PATH" assembleDebug --no-daemon --stacktrace --info
+          
+      - name: 🔎 Emergency Search
         run: |
           mkdir -p distribution
-          echo "Searching for APKs..."
-          find . -name "*.apk" -type f -exec cp {} ./distribution/ \;
+          echo "পুরো সার্ভারে APK খুঁজছি..."
+          # যদি গ্র্যাডল সাকসেসফুল হয়, তবে সে কোথাও না কোথাও APK রাখবেই
+          find . -name "*.apk" -exec cp {} ./distribution/ \;
           
-          if [ -z "$(ls -A distribution)" ]; then
-            echo "❌ No APK found after build!"
-            exit 1
-          else
-            echo "✅ Found these files:"
-            ls -l distribution
-          fi
-
-      - name: 📤 Upload Artifact
-        # আপনার শেয়ার করা ডকুমেন্টেশন অনুযায়ী paths সেট করা হয়েছে
-        uses: actions/upload-artifact@v4
-        with:
-          name: TotkaQuiz-Release-Build
-          path: distribution/
-          if-no-files-found: error
-          retention-days: 5
+          echo "ফলাফল:"
+          ls -R distribution/
+          
