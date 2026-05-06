@@ -1,42 +1,62 @@
-name: Build Android APK
+name: Android Build Pipeline
 
 on:
   push:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
-  workflow_dispatch:
+  workflow_dispatch: # ম্যানুয়ালি রান করার সুবিধা
 
 jobs:
   build:
-    name: Build & Artifact
+    name: Build & Release Artifacts
     runs-on: ubuntu-latest
-
-    permissions:
-      contents: read
+    timeout-minutes: 30 # দীর্ঘক্ষণ আটকে থাকলে অটো বন্ধ হবে
 
     steps:
       - name: 📥 Checkout Repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # ফুল হিস্ট্রি নেবে যাতে ভার্সনিং ঠিক থাকে
 
       - name: ☕ Setup JDK 17
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
-          # setup-java এর নিজস্ব ক্যাশিং ফিচার ব্যবহার করা সহজ এবং কার্যকর
-          cache: 'gradle'
+          cache: 'gradle' # বিল্ট-ইন গ্রেডল ক্যাশিং
 
-      - name: 📌 Grant execute permission
-        run: chmod +x gradlew
+      - name: 🛠️ Fix Wrapper & Environment
+        run: |
+          mkdir -p gradle/wrapper
+          # যদি জার ফাইল না থাকে তবে ডাউনলোড করবে
+          if [ ! -f gradle/wrapper/gradle-wrapper.jar ]; then
+            curl -L https://github.com/gradle/gradle/raw/v8.7.0/gradle/wrapper/gradle-wrapper.jar -o gradle/wrapper/gradle-wrapper.jar
+          fi
+          chmod +x gradlew
+
+      - name: 🔍 Validate Gradle Wrapper
+        run: ./gradlew --version
 
       - name: 🔨 Build Debug APK
-        run: ./gradlew assembleDebug --stacktrace
+        run: ./gradlew assembleDebug --stacktrace --no-daemon
 
-      - name: 📤 Upload APK
+      - name: 📦 Prepare Artifact Name
+        id: artifact_name
+        run: echo "name=totka-quiz-v${{ github.run_number }}-$(date +'%Y%m%d')" >> $GITHUB_OUTPUT
+
+      - name: 📤 Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: debug-apk
-          path: app/build/outputs/apk/debug/*.apk
-          retention-days: 7 # স্টোরেজ বাঁচাতে ৭ দিন রাখা বুদ্ধিমানের কাজ
+          name: ${{ steps.artifact_name.outputs.name }}
+          # মাল্টিপল পাথ হ্যান্ডেল করার জন্য ওয়াইল্ডকার্ড ব্যবহার
+          path: |
+            app/build/outputs/apk/debug/*.apk
+          retention-days: 14 # প্রোডাকশনের জন্য ১৪ দিন যথেষ্ট
           if-no-files-found: error
+
+      - name: 📢 Build Summary
+        run: |
+          echo "### Build Successful! 🚀" >> $GITHUB_STEP_SUMMARY
+          echo "Build Number: ${{ github.run_number }}" >> $GITHUB_STEP_SUMMARY
+          echo "Date: $(date)" >> $GITHUB_STEP_SUMMARY
