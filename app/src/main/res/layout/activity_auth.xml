@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_dark"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="28dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="⚡"
+            android:textSize="56sp"
+            android:layout_marginBottom="8dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="আবার স্বাগতম!"
+            android:textColor="@color/text_primary"
+            android:textSize="28sp"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="লগইন করো"
+            android:textColor="@color/text_secondary"
+            android:textSize="14sp"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="32dp"/>
+
+        <EditText
+            android:id="@+id/et_gmail"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:hint="Gmail / Phone Number"
+            android:inputType="textEmailAddress"
+            android:background="@drawable/bg_input"
+            android:textColor="@color/text_primary"
+            android:textColorHint="@color/text_hint"
+            android:paddingHorizontal="16dp"
+            android:layout_marginBottom="12dp"/>
+
+        <EditText
+            android:id="@+id/et_password"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:hint="Password"
+            android:inputType="textPassword"
+            android:background="@drawable/bg_input"
+            android:textColor="@color/text_primary"
+            android:textColorHint="@color/text_hint"
+            android:paddingHorizontal="16dp"
+            android:layout_marginBottom="24dp"/>
+
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:layout_marginBottom="12dp"
+            android:indeterminateTint="@color/brand_primary"/>
+
+        <Button
+            android:id="@+id/btn_login"
+            style="@style/TotkaButton"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:text="@string/login"/>
+
+        <TextView
+            android:id="@+id/btn_go_signup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="নতুন? সাইনআপ করো →"
+            android:textColor="@color/brand_secondary"
+            android:textSize="14sp"
+            android:layout_marginTop="20dp"
+            android:padding="8dp"/>
+
+    </LinearLayout>
+</ScrollView>

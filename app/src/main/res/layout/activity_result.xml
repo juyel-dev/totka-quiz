@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:background="@color/bg_dark">
+
+    <!-- Lottie confetti overlay -->
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/lottie_confetti"
+        android:layout_width="match_parent" android:layout_height="match_parent"
+        app:lottie_rawRes="@raw/confetti"
+        app:lottie_autoPlay="false"
+        app:lottie_loop="false"
+        android:visibility="gone"
+        android:elevation="8dp"/>
+
+    <ScrollView android:layout_width="match_parent" android:layout_height="match_parent">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="vertical" android:padding="20dp" android:gravity="center_horizontal">
+
+            <TextView android:id="@+id/tv_result_emoji"
+                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="🎯" android:textSize="64sp" android:layout_marginBottom="4dp"/>
+
+            <TextView android:id="@+id/tv_result_title"
+                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="দারুণ!" android:textColor="@color/text_primary"
+                android:textSize="28sp" android:textStyle="bold"/>
+
+            <TextView android:id="@+id/tv_result_meta"
+                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:textColor="@color/text_secondary" android:textSize="13sp"
+                android:layout_marginTop="4dp" android:layout_marginBottom="16dp"/>
+
+            <!-- Score ring area -->
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:background="@drawable/bg_card" android:padding="20dp"
+                android:orientation="vertical" android:gravity="center"
+                android:layout_marginBottom="12dp">
+
+                <TextView android:id="@+id/tv_result_percent"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="0%" android:textColor="@color/brand_primary"
+                    android:textSize="52sp" android:textStyle="bold"/>
+                <TextView android:id="@+id/tv_result_score"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="0 / 0" android:textColor="@color/text_secondary"
+                    android:textSize="16sp" android:layout_marginBottom="16dp"/>
+
+                <!-- Stats row -->
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="horizontal" android:gravity="center">
+                    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                        android:layout_weight="1" android:orientation="vertical" android:gravity="center">
+                        <TextView android:id="@+id/tv_result_correct"
+                            android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="0" android:textColor="@color/correct"
+                            android:textSize="26sp" android:textStyle="bold"/>
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="সঠিক" android:textColor="@color/text_secondary" android:textSize="12sp"/>
+                    </LinearLayout>
+                    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                        android:layout_weight="1" android:orientation="vertical" android:gravity="center">
+                        <TextView android:id="@+id/tv_result_wrong"
+                            android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="0" android:textColor="@color/wrong"
+                            android:textSize="26sp" android:textStyle="bold"/>
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="ভুল" android:textColor="@color/text_secondary" android:textSize="12sp"/>
+                    </LinearLayout>
+                    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                        android:layout_weight="1" android:orientation="vertical" android:gravity="center">
+                        <TextView android:id="@+id/tv_result_skipped"
+                            android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="0" android:textColor="@color/skip"
+                            android:textSize="26sp" android:textStyle="bold"/>
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="বাদ" android:textColor="@color/text_secondary" android:textSize="12sp"/>
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+
+            <TextView android:id="@+id/tv_result_time"
+                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:textColor="@color/text_secondary" android:textSize="13sp"
+                android:layout_marginBottom="20dp"/>
+
+            <Button android:id="@+id/btn_new_quiz" style="@style/TotkaButton"
+                android:layout_width="match_parent" android:layout_height="52dp"
+                android:text="নতুন কুইজ 🚀" android:layout_marginBottom="10dp"/>
+
+            <Button android:id="@+id/btn_share_result" style="@style/TotkaButton"
+                android:layout_width="match_parent" android:layout_height="52dp"
+                android:text="Result শেয়ার করো 📤"
+                android:backgroundTint="@color/bg_card"/>
+        </LinearLayout>
+    </ScrollView>
+</FrameLayout>

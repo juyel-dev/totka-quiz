@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32"/>
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <uses-permission android:name="android.permission.VIBRATE"/>
+
+    <application
+        android:name=".TotkaApp"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.TotkaQuiz"
+        android:networkSecurityConfig="@xml/network_security">
+
+        <!-- ① Splash — Launcher -->
+        <activity
+            android:name=".SplashActivity"
+            android:exported="true"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+
+        <!-- ② Auth -->
+        <activity android:name=".auth.AuthActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".auth.SignupActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize"/>
+
+        <!-- ③ Main / Home -->
+        <activity android:name=".home.HomeActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"/>
+
+        <!-- ④ Quiz -->
+        <activity android:name=".quiz.QuizActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".quiz.ResultActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"/>
+
+        <!-- ⑤ Profile -->
+        <activity android:name=".profile.ProfileActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".profile.EditProfileActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize"/>
+
+        <!-- WorkManager for daily notification -->
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
+            android:exported="false"
+            tools:node="merge">
+            <meta-data
+                android:name="androidx.work.WorkManagerInitializer"
+                android:value="androidx.startup"
+                tools:node="remove"/>
+        </provider>
+
+    </application>
+</manifest>

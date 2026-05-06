@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Totka Quiz</string>
+
+    <!-- Auth -->
+    <string name="login">লগইন করুন</string>
+    <string name="signup">সাইনআপ করুন</string>
+    <string name="gmail_hint">Gmail / Phone Number</string>
+    <string name="password_hint">Password</string>
+    <string name="next">পরবর্তী →</string>
+    <string name="back">← আগে</string>
+    <string name="submit">জমা দিন ✓</string>
+
+    <!-- Signup pages -->
+    <string name="page1_title">স্বাগতম! 👋</string>
+    <string name="page1_sub">তোমার ID আর Password দাও</string>
+    <string name="page2_title">প্রোফাইল 📸</string>
+    <string name="page2_sub">তোমার নাম আর ছবি দাও</string>
+    <string name="page3_title">পড়াশোনা 🎓</string>
+    <string name="page3_sub">Board, Class সিলেক্ট করো</string>
+
+    <!-- Home -->
+    <string name="select_board">Board সিলেক্ট করো</string>
+    <string name="select_class">Class সিলেক্ট করো</string>
+    <string name="select_subject">Subject সিলেক্ট করো</string>
+    <string name="select_chapter">Chapter সিলেক্ট করো</string>
+    <string name="start_quiz">কুইজ শুরু করো 🚀</string>
+
+    <!-- Quiz -->
+    <string name="show_answer">উত্তর দেখুন</string>
+    <string name="next_question">পরবর্তী প্রশ্ন</string>
+    <string name="submit_quiz">জমা দিন</string>
+
+    <!-- Result -->
+    <string name="your_score">তোমার স্কোর</string>
+    <string name="retry_wrong">ভুলগুলো আবার</string>
+    <string name="new_quiz">নতুন কুইজ</string>
+
+    <!-- Profile -->
+    <string name="edit_profile">প্রোফাইল এডিট করো</string>
+    <string name="save_changes">সেভ করো</string>
+
+    <!-- Errors -->
+    <string name="err_no_internet">ইন্টারনেট সংযোগ নেই</string>
+    <string name="err_fill_all">সব তথ্য পূরণ করো</string>
+    <string name="err_invalid_email">সঠিক Gmail দাও</string>
+</resources>

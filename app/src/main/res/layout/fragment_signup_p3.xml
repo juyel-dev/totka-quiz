@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:background="@color/bg_dark" android:fillViewport="true">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:orientation="vertical" android:padding="24dp">
+
+        <TextView android:id="@+id/tvStep" android:text="Step 3 / 3 — Academic"
+            android:textColor="@color/accent_indigo" android:textSize="12sp"
+            android:textAllCaps="true" android:layout_marginTop="48dp" android:layout_marginBottom="4dp"
+            android:layout_width="match_parent" android:layout_height="wrap_content"/>
+        <View android:layout_width="match_parent" android:layout_height="1dp"
+            android:background="@color/divider" android:layout_marginBottom="16dp"/>
+
+        <!-- Board Spinner -->
+        <TextView android:text="Board" android:textColor="@color/text_secondary" android:textSize="13sp"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+        <Spinner android:id="@+id/spinnerBoard"
+            android:layout_width="match_parent" android:layout_height="48dp"
+            android:background="@color/surface" android:padding="8dp"
+            android:layout_marginBottom="12dp"/>
+
+        <!-- Class Spinner -->
+        <TextView android:text="Class" android:textColor="@color/text_secondary" android:textSize="13sp"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+        <Spinner android:id="@+id/spinnerClass"
+            android:layout_width="match_parent" android:layout_height="48dp"
+            android:background="@color/surface" android:padding="8dp"
+            android:layout_marginBottom="12dp"/>
+
+        <!-- Username -->
+        <com.google.android.material.textfield.TextInputLayout style="@style/TotkaInput"
+            android:hint="Username (e.g. juyel123)"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp">
+            <com.google.android.material.textfield.TextInputEditText android:id="@+id/etUsername"
+                android:textColor="@color/text_primary"
+                android:layout_width="match_parent" android:layout_height="wrap_content"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Bio -->
+        <com.google.android.material.textfield.TextInputLayout style="@style/TotkaInput"
+            android:hint="Bio (optional)"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp">
+            <com.google.android.material.textfield.TextInputEditText android:id="@+id/etBio"
+                android:textColor="@color/text_primary" android:minLines="2"
+                android:layout_width="match_parent" android:layout_height="wrap_content"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Fav Subject -->
+        <com.google.android.material.textfield.TextInputLayout style="@style/TotkaInput"
+            android:hint="Favourite Subject" android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:layout_marginBottom="12dp">
+            <com.google.android.material.textfield.TextInputEditText android:id="@+id/etFavSubject"
+                android:textColor="@color/text_primary"
+                android:layout_width="match_parent" android:layout_height="wrap_content"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <TextView android:text="Social Links (optional)" android:textColor="@color/text_secondary"
+            android:textSize="13sp" android:layout_marginBottom="4dp"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+
+        <com.google.android.material.textfield.TextInputLayout style="@style/TotkaInput"
+            android:hint="Facebook URL" android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:layout_marginBottom="6dp">
+            <com.google.android.material.textfield.TextInputEditText android:id="@+id/etFacebook"
+                android:inputType="textUri" android:textColor="@color/text_primary"
+                android:layout_width="match_parent" android:layout_height="wrap_content"/>
+        </com.google.android.material.textfield.TextInputLayout>
+        <com.google.android.material.textfield.TextInputLayout style="@style/TotkaInput"
+            android:hint="Instagram URL" android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:layout_marginBottom="6dp">
+            <com.google.android.material.textfield.TextInputEditText android:id="@+id/etInstagram"
+                android:inputType="textUri" android:textColor="@color/text_primary"
+                android:layout_width="match_parent" android:layout_height="wrap_content"/>
+        </com.google.android.material.textfield.TextInputLayout>
+        <com.google.android.material.textfield.TextInputLayout style="@style/TotkaInput"
+            android:hint="YouTube URL" android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:layout_marginBottom="6dp">
+            <com.google.android.material.textfield.TextInputEditText android:id="@+id/etYoutube"
+                android:inputType="textUri" android:textColor="@color/text_primary"
+                android:layout_width="match_parent" android:layout_height="wrap_content"/>
+        </com.google.android.material.textfield.TextInputLayout>
+        <com.google.android.material.textfield.TextInputLayout style="@style/TotkaInput"
+            android:hint="Telegram Username / URL" android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:layout_marginBottom="20dp">
+            <com.google.android.material.textfield.TextInputEditText android:id="@+id/etTelegram"
+                android:textColor="@color/text_primary"
+                android:layout_width="match_parent" android:layout_height="wrap_content"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <ProgressBar android:id="@+id/progressBar" android:visibility="gone"
+            android:indeterminateTint="@color/accent_indigo"
+            android:layout_width="32dp" android:layout_height="32dp"
+            android:layout_gravity="center" android:layout_marginBottom="8dp"/>
+        <com.google.android.material.button.MaterialButton android:id="@+id/btnSubmit"
+            style="@style/BtnPrimary" android:text="Submit ✓"
+            android:layout_width="match_parent" android:layout_height="56dp" android:layout_marginBottom="8dp"/>
+        <com.google.android.material.button.MaterialButton android:id="@+id/btnBack"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:text="← Back" android:textColor="@color/text_secondary"
+            android:layout_width="match_parent" android:layout_height="wrap_content"/>
+    </LinearLayout>
+</ScrollView>
