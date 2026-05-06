@@ -1,4 +1,4 @@
-name: Build Android APK
+name: Real Solution Android Build
 
 on:
   push:
@@ -7,11 +7,11 @@ on:
 
 jobs:
   build:
-    name: Build & Artifact
+    name: Build and Upload
     runs-on: ubuntu-latest
 
     steps:
-      - name: 📥 Checkout Repository
+      - name: 📥 Checkout Code
         uses: actions/checkout@v4
 
       - name: ☕ Setup JDK 17
@@ -24,27 +24,14 @@ jobs:
       - name: 📌 Grant execute permission
         run: chmod +x gradlew
 
-      - name: 🔨 Build Debug APK
-        run: ./gradlew assembleDebug --stacktrace --no-daemon
+      - name: 🔨 Clean & Build APK
+        # clean যোগ করা হয়েছে যাতে পুরনো কোনো এরর ক্যাশ না থাকে
+        run: ./gradlew clean assembleDebug --info
 
-      - name: 🔎 Locate & Prepare APK
-        run: |
-          echo "Finding all APKs..."
-          find . -name "*.apk" -type f
-          mkdir -p output
-          # কোপাইলটের কনফার্ম করা পাথে ফাইলটি কপি করা হচ্ছে
-          if [ -f app/build/outputs/apk/debug/app-debug.apk ]; then
-            cp app/build/outputs/apk/debug/app-debug.apk output/totka-quiz-debug.apk
-            echo "✅ APK found and copied!"
-          else
-            echo "❌ ERROR: APK not found at expected location!"
-            exit 1
-          fi
-
-      - name: 📤 Upload APK
+      - name: 📤 Upload Entire Outputs Folder (The Master Trick)
         uses: actions/upload-artifact@v4
         with:
-          name: TotkaQuiz-App
-          path: output/*.apk
-          retention-days: 7
-          if-no-files-found: error
+          name: TotkaQuiz-Outputs
+          # আমরা কোনো নির্দিষ্ট .apk খুঁজছি না, পুরো আউটপুট ফোল্ডার আপলোড করে দিচ্ছি
+          path: app/build/outputs/
+          
