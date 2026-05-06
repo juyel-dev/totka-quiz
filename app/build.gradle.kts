@@ -20,7 +20,7 @@ android {
         buildConfigField("String", "GAS_URL",
             "\"https://script.google.com/macros/s/AKfycbzrSAsUNxfsW2mtV7yQrOiPB6IloQ2XhMAgVhOmFXsQXk8KZSvD2UXYra-LnB0Id8vo1Q/exec\"")
         buildConfigField("String", "TG_BOT_TOKEN",
-            "\"YOUR_BOT_TOKEN_HERE\"")              // ← replace with real token
+            "\"8712924439:AAEfoDN6HpXmba41aubNr6Pa1FD7taSiz48\"")              // ← replace with real token
         buildConfigField("String", "TG_CHAT_ID",
             "\"7929275539\"")
         buildConfigField("String", "MASTER_CSV",
