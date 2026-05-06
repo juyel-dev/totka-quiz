@@ -1,17 +1,24 @@
-name: Final Pathless Build
+# ১. Workflow Name (ডকুমেন্টেশন অনুযায়ী)
+name: Totka Quiz Production Build
 
+# ২. Trigger Events (ডকুমেন্টেশন অনুযায়ী push এবং manual trigger রাখা হয়েছে)
 on:
   push:
-    branches: [ "main" ]
-  workflow_dispatch:
+    branches:
+      - main
+  workflow_dispatch: # এটি আপনাকে ম্যানুয়ালি বিল্ড রান করার সুযোগ দেবে
+
+# ৩. Permissions (ডকুমেন্টেশন অনুযায়ী GITHUB_TOKEN কে রাইট অ্যাক্সেস দেওয়া হয়েছে)
+permissions:
+  contents: write
 
 jobs:
-  build:
-    name: Auto-Build
+  android-build:
+    name: Generate and Locate APK
     runs-on: ubuntu-latest
 
     steps:
-      - name: 📥 Checkout Code
+      - name: 📥 Checkout Repository
         uses: actions/checkout@v4
 
       - name: ☕ Setup JDK 17
@@ -21,29 +28,41 @@ jobs:
           java-version: '17'
           cache: 'gradle'
 
-      - name: 🛠️ Fix and Build
+      - name: 📌 Fix Permissions & Format
+        # 'find' এরর এড়াতে সরাসরি ভ্যারিয়েবল ব্যবহার করা হয়েছে
         run: |
-          # ১. gradlew ফাইলটি যেখানেই থাকুক খুঁজে বের করা
           G_PATH=$(find . -name "gradlew" | head -n 1)
+          if [ -z "$G_PATH" ]; then echo "Gradlew not found!"; exit 1; fi
           chmod +x "$G_PATH"
           sudo apt-get install -y dos2unix
           dos2unix "$G_PATH"
-          
-          # ২. অ্যাপ মডিউলসহ বিল্ড করা (যাতে কোনো পাথ মিস না হয়)
-          "$G_PATH" :app:assembleDebug --no-daemon
+          echo "GRADLE_PATH=$G_PATH" >> $GITHUB_ENV
 
-      - name: 🔎 Deep Search and Copy
-        # এটি ম্যাজিক স্টেপ: যেখানেই APK থাকুক, সেটিকে বের করে আনবে
+      - name: 🔨 Build Debug APK
+        # ডাইরেক্ট পাথ ব্যবহার না করে এনভায়রনমেন্ট ভ্যারিয়েবল থেকে রান করা হচ্ছে
         run: |
-          mkdir -p final_output
-          find . -name "*.apk" -type f -exec cp {} final_output/ \;
-          echo "চেক করছি কোন ফাইল পাওয়া গেল কি না:"
-          ls final_output/
+          ${{ env.GRADLE_PATH }} :app:assembleDebug --no-daemon --stacktrace
 
-      - name: 📤 Upload Found APKs
+      - name: 🔎 The "Deep Scan" Strategy
+        # ডকুমেন্টেশনের 'paths' এর ঝামেলা এড়াতে আমরা সব APK এক জায়গায় জড়ো করব
+        run: |
+          mkdir -p distribution
+          echo "Searching for APKs..."
+          find . -name "*.apk" -type f -exec cp {} ./distribution/ \;
+          
+          if [ -z "$(ls -A distribution)" ]; then
+            echo "❌ No APK found after build!"
+            exit 1
+          else
+            echo "✅ Found these files:"
+            ls -l distribution
+          fi
+
+      - name: 📤 Upload Artifact
+        # আপনার শেয়ার করা ডকুমেন্টেশন অনুযায়ী paths সেট করা হয়েছে
         uses: actions/upload-artifact@v4
         with:
-          name: TotkaQuiz-Build
-          # আমরা এখন আমাদের বানানো 'final_output' ফোল্ডার থেকে আপলোড করব
-          path: final_output/
-          
+          name: TotkaQuiz-Release-Build
+          path: distribution/
+          if-no-files-found: error
+          retention-days: 5
