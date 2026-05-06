@@ -1,55 +1,58 @@
-name: Build TotkaQuiz APK
+name: Build Android APK
 
 on:
   push:
-    branches: [ "main" ]
-  workflow_dispatch:
-
-env:
-  # Node.js 24 ব্যবহার করতে বাধ্য করা (ওয়ার্নিং সরানোর জন্য)
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
 
 jobs:
   build:
-    name: Build & Release Artifacts
     runs-on: ubuntu-latest
-
+    
     steps:
-      - name: 📥 Checkout Repository
+      - name: Checkout code
         uses: actions/checkout@v4
-
-      - name: ☕ Setup JDK 17
+      
+      - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
-          distribution: 'temurin'
           java-version: '17'
-          cache: 'gradle'
-
-      - name: 📌 Fix Permissions & Scripts
-        # টার্মাক্স বা উইন্ডোজ থেকে আসা ইনভিজিবল এরর দূর করতে dos2unix ব্যবহার
-        run: |
-          chmod +x gradlew
-          sudo apt-get install dos2unix -y
-          dos2unix gradlew
-
-      - name: 🔨 Build Debug APK
-        # আমরা সরাসরি মডিউল ধরে বিল্ড করছি যাতে কোনো মিস না হয়
-        run: ./gradlew :app:assembleDebug --stacktrace --no-daemon
-
-      - name: 🔎 Verification & Preparation
-        # ফাইলটি খুঁজে বের করে একটি নির্দিষ্ট ফোল্ডারে রাখা যাতে আপলোড করতে সুবিধা হয়
-        run: |
-          mkdir -p final_output
-          # সব .apk ফাইল খুঁজে বের করে কপি করা
-          find app/build/outputs/apk/debug/ -name "*.apk" -exec cp {} final_output/ \;
-          echo "Build successful. Files found:"
-          ls -R final_output/
-
-      - name: 📤 Upload APK Artifact
+          distribution: 'temurin'
+          cache: gradle
+      
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+      
+      - name: Build debug APK
+        run: ./gradlew assembleDebug --stacktrace
+      
+      - name: Build release APK
+        run: ./gradlew assembleRelease --stacktrace
+        continue-on-error: true
+      
+      - name: Upload debug APK
         uses: actions/upload-artifact@v4
+        if: success()
         with:
-          name: TotkaQuiz-Debug-Build
-          path: final_output/*.apk
-          retention-days: 7
-          if-no-files-found: error
-          
+          name: app-debug
+          path: app/build/outputs/apk/debug/app-debug.apk
+          retention-days: 30
+      
+      - name: Upload release APK
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: app-release
+          path: app/build/outputs/apk/release/app-release.apk
+          retention-days: 30
+          ignore-errors: true
+
+      - name: Print build output directory
+        if: always()
+        run: |
+          echo "=== Debug APK Directory ==="
+          ls -la app/build/outputs/apk/debug/ || echo "Debug directory not found"
+          echo ""
+          echo "=== Release APK Directory ==="
+          ls -la app/build/outputs/apk/release/ || echo "Release directory not found"
