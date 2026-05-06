@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    name: Build & Artifact
+    name: Build Debug APK
     runs-on: ubuntu-latest
 
     steps:
@@ -21,27 +21,19 @@ jobs:
           java-version: '17'
           cache: 'gradle'
 
-      - name: 🛠️ Fix Wrapper Jar
-        run: |
-          mkdir -p gradle/wrapper
-          if [ ! -f gradle/wrapper/gradle-wrapper.jar ]; then
-            curl -L https://github.com/gradle/gradle/raw/v8.7.0/gradle/wrapper/gradle-wrapper.jar -o gradle/wrapper/gradle-wrapper.jar
-          fi
-          chmod +x gradlew
+      - name: 📌 Grant execute permission
+        run: chmod +x gradlew
 
-      - name: 🔨 Build APK
-        # assembleDebug কাজ না করলে এটি পুরো প্রোজেক্ট বিল্ড করবে
-        run: ./gradlew assemble --stacktrace --no-daemon
-
-      - name: 🔎 Find APK Path (Debug Only)
-        run: find . -name "*.apk"
+      - name: 🔨 Clean & Build APK
+        # প্রোজেক্ট পরিষ্কার করে নতুন করে বিল্ড করার জন্য clean assembleDebug দেওয়া হয়েছে
+        run: ./gradlew clean assembleDebug --stacktrace --no-daemon
 
       - name: 📤 Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: totka-quiz-app
-          # এটি প্রোজেক্টের যেকোনো জায়গায় তৈরি হওয়া সব .apk ফাইল নিয়ে নেবে
-          path: "**/*.apk"
+          name: TotkaQuiz-Debug
+          # আপনার প্রোজেক্ট অনুযায়ী এটিই সঠিক পাথ
+          path: app/build/outputs/apk/debug/app-debug.apk
           retention-days: 7
           if-no-files-found: error
           
